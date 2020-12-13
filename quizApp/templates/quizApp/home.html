@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+    <div style="margin-left:100px;margin-right: 100px;">
+        <div id="username">
+            {% if user.is_authenticated %}
+                <b>Welcome &nbsp;&nbsp;{{ user.get_username }}&nbsp;|</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class="Log" href="{% url 'logout' %}">&nbsp;Logout&nbsp;|</a>
+            {% else %}
+                <a href="{% url 'login' %}">&nbsp;Login |</a>&nbsp;&nbsp;
+                <a href="{% url 'signup' %}">Signup&nbsp;|&nbsp;</a>
+            {% endif %}
+        </div>
+            <b id="tot"></b>
+            <hr>
+            {% for result in results %}
+            <div>
+                <table>
+                    <tr>
+                        <td>{{result.id}} {{result.Question}}</td>
+                    </tr>
+                    <tr>
+                        <td><input type="radio" id="Option1" class="rb"  name="{{result.id}}" value="{{result.Option1}}">{{result.Option1}}</td>
+                    </tr>
+                    <tr>
+                        <td><input type="radio" id="Option2" class="rb"  name="{{result.id}}" value="{{result.Option2}}">{{result.Option2}}</td>
+                    </tr>
+                    <tr>
+                        <td><input type="radio" id="Option3" class="rb"  name="{{result.id}}" value="{{result.Option3}}">{{result.Option3}}</td>
+                    </tr>
+                    <tr>
+                        <td><input type="radio" id="Option4" class="rb"  name="{{result.id}}" value="{{result.Option4}}">{{result.Option4}}</td>
+                    </tr>
+                    <tr>
+                        <td><label id="corans" class="rb" value="{{result.Corrans}}" style="display: none; color:green;"><b>The correct answer is :{{result.Corrans}}</b></label></td>
+                    </tr>
+                    <tr>
+                        <td><input type="hidden" id="corans" class="rb" name="" value="{{result.Corrans}}"></td>
+                    </tr>
+                
+                </table> <hr/>
+            </div>
+            {% endfor %}
+            {% if user.is_authenticated %}
+                <input type="submit" value="Click for Results" id="but1" onclick="getanswers();" class="btn btn-success"/>
+            {% else %}
+                <input type="submit" value="Login First !" id="but1" onclick="getanswers();" class="btn btn-danger" disabled/>
+            {% endif %}
+            <br>
+            <b id="UserAnswers" name="totalMarks"></b>
+    </div>
+</body>
+<script>
+    $(document).ready(function(){
+        $("#but1").click(function(){
+            if($('input:radio:checked').length > 0)
+            {
+                $(".rb").show();
+                $(".rb").attr("disabled",true);
+            }
+            else{
+                $(".rb").attr("disabled",true);
+                alert("You did not choose option...!");
+            }
+            
+        });
+    });
+
+
+    function getanswers()
+    {
+        var e = document.getElementsByTagName('input');
+        var total = 0;
+        for(i=0;i<=e.length;i++)
+        {
+            if(e[i].type == "radio")
+            {
+                if(e[i].checked)
+                {
+                    var markAns = e[i].value;
+                    document.getElementById("UserAnswers").innerHTML+="Q "+e[i].name+"The answer you are selected is :"+e[i].value+"<br>";
+                }
+            }
+            else if(e[i].type == "hidden")
+            {
+                var rightAns = e[i].value;
+                if(rightAns == markAns)
+                {
+                    total = total+5;
+                    document.getElementById("tot").innerHTML = "Your total score is "+total;
+                }  
+            }
+        }   
+    }
+</script>
+</html>
